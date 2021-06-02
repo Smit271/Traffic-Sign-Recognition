@@ -8,7 +8,6 @@ from werkzeug.utils import redirect, secure_filename
 import os
 import uuid
 from time import gmtime, strftime
-from flask_mail import Mail, Message
 import time
 
 
@@ -16,13 +15,6 @@ app = Flask(__name__)
 cors = CORS(app)
 app.config['CORS_HEADERS'] = 'Content-Type'
 app.config['SECRET_KEY'] = 'sjbcxzsdc15xz6czc'
-app.config['MAIL_SERVER']='smtp.gmail.com'
-app.config['MAIL_PORT'] = 465
-app.config['MAIL_USERNAME'] = 'botofsmitpanchal@gmail.com'
-app.config['MAIL_PASSWORD'] = 'botofsmitpanchal123'
-app.config['MAIL_USE_TLS'] = False
-app.config['MAIL_USE_SSL'] = True
-mail_send = Mail(app)
 
 
 model = tf.keras.models.load_model('./models/model_best_final.h5')
@@ -84,22 +76,6 @@ def get_output(image_path):
 def home():
     if request.method == "POST":
         upload_images()
-        if request.form.get("name"):
-            name = request.form.get("name")
-            mail = request.form.get("email")
-            sub = request.form.get("subject")
-            mes = request.form.get("message")
-            mes_new = f"Hello Sir,\n{name} wants to convey you message about {sub}, message is below\n{mes}\n\nSent by\n{name}\nmail : {mail}"
-            msg = Message(sub, sender = app.config["MAIL_USERNAME"], recipients = ['smitpanchal42@gmail.com'])
-            msg.body = mes_new
-            try:
-                mail_send.send(msg)
-                flash("Message has been sent to Admin", "success")
-                return redirect(url_for("home"))
-            except:
-                flash("Send again", "danger")
-                return redirect(url_for("home"))
-
     return render_template('index.html')
 
 def upload_images():
